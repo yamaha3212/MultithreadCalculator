@@ -29,14 +29,14 @@ public slots:
     void pushOperation(int op);
     void tryCalculate();
     void terminate();
-    void getDelay(int delay);
+    void setDelay(int delay);
 
 private:
-    enum class operation { SUM, SUB, DIV, MUL };
+    enum class operation { SUM, SUB, DIV, MUL, RST };
 
     threadSafeQueue<int> QueueCommands;
-    threadSafeQueue<double> QueueRequests1;
-    threadSafeQueue<double> QueueResults1;
+    threadSafeQueue<double> QueueRequests;
+    threadSafeQueue<double> QueueResults;
 
     static int errCode;
     static operation workType;

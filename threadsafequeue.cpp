@@ -1,10 +1,7 @@
 #include "threadsafequeue.h"
 
 template<typename T>
-threadSafeQueue<T>::threadSafeQueue()
-{
-    queue = new QQueue<T>;
-}
+threadSafeQueue<T>::threadSafeQueue() : queue(new QQueue<T>) {}
 
 template<typename T>
 threadSafeQueue<T>::~threadSafeQueue() {
@@ -34,10 +31,12 @@ T threadSafeQueue<T>::front() {
 }
 
 template<typename T>
-void threadSafeQueue<T>::pop() {
+T threadSafeQueue<T>::pop() {
     mutex.lock();
+    T tmp = queue->front();
     queue->pop_front();
     mutex.unlock();
+    return tmp;
 }
 
 template<typename T>

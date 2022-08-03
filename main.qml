@@ -4,12 +4,15 @@ import QtQuick.Window 2.1
 
 Window {
     visible: true
+
     minimumWidth: 435
     minimumHeight: 355
+
     title: qsTr("Multithread Calculator")
     property int selectedOp : 9
     property bool opClicked: false
     property bool dotClicked: false
+    property bool eqClicked: false
     property int cderr: 0
 
     Connections {
@@ -31,8 +34,6 @@ Window {
         anchors.right: parent.right
         anchors.top: parent.top
         height: parent.height * 1.5 / 8
-        border.color: "white"
-        border.width: 0
         color: "#4b374b"
         Text {
             id: resultText
@@ -100,6 +101,7 @@ Window {
                 height: parent.height / 5
                 text: modelData
                 onClicked: {
+                    if (eqClicked) {eqClicked = false}
                     if (cderr !== 3) {
                     if (!opClicked) {calculator.pushRequest(resultText.text)}
                     opClicked = true
@@ -170,8 +172,10 @@ Window {
                             resultText.text = dotClicked ? resultText.text : resultText.text.concat(eventName)
                             }
                         else {resultText.text = opClicked ? eventName : resultText.text == "0" ? eventName : resultText.text.length > 6 ? resultText.text : resultText.text.concat(eventName)}
-                        if (selectedOp != 9 && opClicked) { calculator.pushOperation(selectedOp) }
+                        if (selectedOp != 9 && opClicked && !eqClicked) { calculator.pushOperation(selectedOp) }
+                        if (eqClicked) { calculator.pushOperation(4) }
                         opClicked = false
+                        eqClicked = false
                     }
                     }
                 property string eventName: {
@@ -212,6 +216,7 @@ Window {
                 calculator.pushRequest(resultText.text)
                 calculator.tryCalculate()
                 opClicked = true
+                eqClicked = true
                 }
             }
             contentItem: Text {
@@ -248,7 +253,7 @@ Window {
                 from: 0
                 to: 10000
                 onMoved: {
-                    calculator.getDelay(value)
+                    calculator.setDelay(value)
                 }
             }
         }

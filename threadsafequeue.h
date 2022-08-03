@@ -14,7 +14,7 @@ public:
     bool empty();
     void clear();
     T front();
-    void pop();
+    T pop();
     void push(T value);
 
 private:

@@ -13,16 +13,14 @@ int calculator::delay;
 int calculator::errCode;
 calculator::operation calculator::workType;
 
-calculator::calculator(QObject* parent) : QObject(parent)
-{
-}
+calculator::calculator(QObject* parent) : QObject(parent) {}
 
-void calculator::getDelay(int delay) {
+void calculator::setDelay(int delay) {
     calculator::delay = delay;
 }
 
 void calculator::pushRequest(double number) {
-    QueueRequests1.push(number);
+    QueueRequests.push(number);
 }
 
 void calculator::pushOperation(int op) {
@@ -37,9 +35,10 @@ void calculator::tryCalculate() {
 
 void calculator::terminate() {
     future.cancel();
-    QueueResults1.clear();
-    QueueRequests1.clear();
+    QueueResults.clear();
+    QueueRequests.clear();
     QueueCommands.clear();
+    errCode = 0;
 }
 
 void calculator::getRes() {
@@ -47,24 +46,22 @@ void calculator::getRes() {
     volatile double operandA;
     volatile double operandB;
 
-    while (!QueueRequests1.empty()) {
+    while (!QueueRequests.empty()) {
 
-        if(QueueRequests1.size() == 1 && QueueResults1.empty()) { return; }
-        operandA = QueueResults1.empty() ? QueueRequests1.front() : QueueResults1.front();
-        if (QueueResults1.empty()) {QueueRequests1.pop();}
-        else {QueueResults1.pop();}
-        operandB = QueueRequests1.front();
-        QueueRequests1.pop();
         if ( QueueCommands.empty() ) { return; }
-        int op = static_cast<int>(QueueCommands.front());
-        QueueCommands.pop();
+        int op = static_cast<int>(QueueCommands.pop());
+        if ( op == 4 && !QueueResults.empty() ) {QueueResults.pop(); continue;}
+        else if ( op == 4 ) {continue;}
+        if(QueueRequests.size() == 1 && QueueResults.empty()) { return; }
+        operandA = QueueResults.empty() ? QueueRequests.pop() : QueueResults.pop();
+        operandB = QueueRequests.pop();
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
         double result = doIt(op, operandA, operandB, &errCode);
-        std::cout << "Request lenght: " << QueueRequests1.size() << " " << operandA  << " " << op << " " << operandB << " result is: " << result << " exit code: " << errCode << std::endl;
+        std::cout << "Request lenght: " << QueueRequests.size() << " " << operandA  << " " << op << " " << operandB << " result is: " << result << " exit code: " << errCode << std::endl;
         if (!future.isCanceled()) {
             emit sendResult(result, errCode);
             if (errCode == 3) { terminate(); return; }
-            QueueResults1.push(result);
+            QueueResults.push(result);
         }
     }
 }
