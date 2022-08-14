@@ -43,7 +43,7 @@ double doIt(int typeWork, double operandA, double operandB, int* errorCode) {
                 checkError(errorCode);
                 return result;
             }
-            return 0;
+            return std::numeric_limits<double>::max();
         case 3: // MUL
             result = operandA * operandB;
             checkError(errorCode);

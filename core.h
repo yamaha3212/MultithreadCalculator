@@ -18,8 +18,6 @@ class calculator : public QObject
 
 public:
     explicit calculator(QObject *parent = nullptr);
-    QFuture<void> future;
-    void getRes();
 
 signals:
     void sendResult(double result, int code);
@@ -32,6 +30,9 @@ public slots:
     void setDelay(int delay);
 
 private:
+    QFuture<void> future;
+    void getRes();
+
     enum class operation { SUM, SUB, DIV, MUL, RST };
 
     threadSafeQueue<int> QueueCommands;

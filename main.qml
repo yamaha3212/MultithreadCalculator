@@ -211,12 +211,13 @@ Window {
             height: y * 3
             text: "="
             onClicked: {
-                if (cderr !== 3) {
-                if (!opClicked)
+                if (cderr !== 3 && selectedOp != 9) {
                 calculator.pushRequest(resultText.text)
+                if (opClicked) calculator.pushOperation(selectedOp)
                 calculator.tryCalculate()
                 opClicked = true
                 eqClicked = true
+                selectedOp = 9
                 }
             }
             contentItem: Text {
