@@ -14,6 +14,7 @@ Window {
     property bool dotClicked: false
     property bool eqClicked: false
     property int cderr: 0
+    property string sendedRequest
 
     Connections {
         target: calculator
@@ -25,6 +26,9 @@ Window {
                 resultText.text = "C"
                 }
             else {answer.text = "Result:     " +  Math.round(result * 100000) / 100000}
+        }
+        onSendRequest: {
+            sendedRequest = request;
         }
     }
 
@@ -49,7 +53,7 @@ Window {
         }
         Text {
             id: answer
-            font.pixelSize: parent.height * 1.5 / 4
+            font.pixelSize: parent.height * 1.5 / 5
             anchors.leftMargin: buttons.implicitMargin + 5
             anchors.rightMargin: buttons.implicitMargin
             anchors.fill: parent
@@ -62,7 +66,7 @@ Window {
         }
         Text {
             id: error
-            font.pixelSize: parent.height * 1.5 / 4
+            font.pixelSize: parent.height * 1.5 / 5
             anchors.leftMargin: buttons.implicitMargin + 5
             anchors.rightMargin: buttons.implicitMargin
             anchors.fill: parent
@@ -70,6 +74,18 @@ Window {
             verticalAlignment: Text.AlignTop
             property int ercode : 0
             text: "ErrCode: " + ercode
+            color: "#e9e9e9"
+            fontSizeMode: Text.Fit
+        }
+        Text {
+            id: request
+            font.pixelSize: parent.height * 1.5 / 5
+            anchors.leftMargin: buttons.implicitMargin + 5
+            anchors.fill: parent
+            anchors.top: error.bottom
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            text: "Curr req: " + sendedRequest
             color: "#e9e9e9"
             fontSizeMode: Text.Fit
         }
@@ -156,6 +172,8 @@ Window {
                             resultText.text = 0
                             answer.text = "Result:     " + 0;
                             error.text = "ErrCode: " + 0;
+                            sendedRequest = ""
+                            text: "Curr req: " + sendedRequest
                             selectedOp = 9
                             opClicked = false
                             dotClicked = false

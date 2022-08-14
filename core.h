@@ -21,6 +21,7 @@ public:
 
 signals:
     void sendResult(double result, int code);
+    void sendRequest(QString request);
 
 public slots:
     void pushRequest(double number);
@@ -32,6 +33,7 @@ public slots:
 private:
     QFuture<void> future;
     void getRes();
+    QString getGenuneOperation(int op);
 
     enum class operation { SUM, SUB, DIV, MUL, RST };
 

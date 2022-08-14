@@ -41,6 +41,16 @@ void calculator::terminate() {
     errCode = 0;
 }
 
+QString calculator::getGenuneOperation(int op) {
+    switch (op) {
+        case 0: return "+";
+        case 1: return "-";
+        case 2: return "/";
+        case 3: return "*";
+        default: return "err";
+    }
+}
+
 void calculator::getRes() {
 
     volatile double operandA;
@@ -57,7 +67,7 @@ void calculator::getRes() {
         operandB = QueueRequests.pop();
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
         double result = doIt(op, operandA, operandB, &errCode);
-        std::cout << "Request lenght: " << QueueRequests.size() << " " << operandA  << " " << op << " " << operandB << " result is: " << result << " exit code: " << errCode << std::endl;
+        emit sendRequest(QString::number(operandA) + " " + getGenuneOperation(op) + " " + QString::number(operandB));
         if (!future.isCanceled()) {
             emit sendResult(result, errCode);
             if (errCode == 3) { terminate(); return; }

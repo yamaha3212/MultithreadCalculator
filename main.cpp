@@ -9,14 +9,11 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    calculator calculator;    // Create the application core with signals and slots
+    calculator calculator;
 
     QQmlApplicationEngine engine;
     QQmlContext *context = engine.rootContext();
 
-    /* We load the object into the context to establish the connection,
-     * and also define the name "appCore" by which the connection will occur
-     * */
     context->setContextProperty("calculator", &calculator);
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
@@ -26,6 +23,5 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
-
     return app.exec();
 }
