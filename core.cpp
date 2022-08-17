@@ -9,10 +9,6 @@
 #include <QtConcurrent/QtConcurrent>
 #include <string>
 
-int calculator::delay;
-int calculator::errCode;
-calculator::operation calculator::workType;
-
 calculator::calculator(QObject* parent) : QObject(parent) {}
 
 void calculator::setDelay(int delay) {
@@ -27,7 +23,7 @@ void calculator::pushOperation(int op) {
     QueueCommands.push(op);
 }
 
-void calculator::tryCalculate() {
+void calculator::startCalculateChain() {
     if  (!future.isRunning()) {
         future = QtConcurrent::run(this, &calculator::getRes);
     }
@@ -59,7 +55,7 @@ void calculator::getRes() {
     while (!QueueRequests.empty()) {
 
         if ( QueueCommands.empty() ) { return; }
-        int op = static_cast<int>(QueueCommands.pop());
+        int op = QueueCommands.pop();
         if ( op == 4 && !QueueResults.empty() ) {QueueResults.pop(); continue;}
         else if ( op == 4 ) {continue;}
         if(QueueRequests.size() == 1 && QueueResults.empty()) { return; }
@@ -67,7 +63,7 @@ void calculator::getRes() {
         operandB = QueueRequests.pop();
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
         double result = doIt(op, operandA, operandB, &errCode);
-        emit sendRequest(QString::number(operandA) + " " + getGenuneOperation(op) + " " + QString::number(operandB));
+        emit sendResponse(QString::number(operandA) + " " + getGenuneOperation(op) + " " + QString::number(operandB));
         if (!future.isCanceled()) {
             emit sendResult(result, errCode);
             if (errCode == 3) { terminate(); return; }

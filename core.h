@@ -21,12 +21,12 @@ public:
 
 signals:
     void sendResult(double result, int code);
-    void sendRequest(QString request);
+    void sendResponse(QString request);
 
 public slots:
     void pushRequest(double number);
     void pushOperation(int op);
-    void tryCalculate();
+    void startCalculateChain();
     void terminate();
     void setDelay(int delay);
 
@@ -41,7 +41,7 @@ private:
     threadSafeQueue<double> QueueRequests;
     threadSafeQueue<double> QueueResults;
 
-    static int errCode;
-    static operation workType;
-    static int delay;
+    int errCode;
+    operation workType;
+    int delay;
 };

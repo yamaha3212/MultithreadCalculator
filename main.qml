@@ -22,12 +22,12 @@ Window {
             cderr = code
             error.text = "ErrCode: " + code
             if (code == 3) {
-                answer.text = "Result:     Inf"
+                answer.text = "Result:    Inf"
                 resultText.text = "C"
                 }
-            else {answer.text = "Result:     " +  Math.round(result * 100000) / 100000}
+            else {answer.text = "Result:    " +  Math.round(result * 100000) / 100000}
         }
-        onSendRequest: {
+        onSendResponse: {
             sendedRequest = request;
         }
     }
@@ -60,7 +60,7 @@ Window {
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignBottom
             property int result : 0
-            text: "Result:     " + result
+            text: "Result:    " + result
             color: "#e9e9e9"
             fontSizeMode: Text.Fit
         }
@@ -124,7 +124,7 @@ Window {
                     dotClicked = false
                     if (selectedOp != 9) {
                         selectedOp = eventName
-                        calculator.tryCalculate()
+                        calculator.startCalculateChain()
                     } else { selectedOp = eventName }
                     }
                 }
@@ -170,7 +170,7 @@ Window {
                         if (eventName == "C") {
                             calculator.terminate()
                             resultText.text = 0
-                            answer.text = "Result:     " + 0;
+                            answer.text = "Result:    " + 0;
                             error.text = "ErrCode: " + 0;
                             sendedRequest = ""
                             text: "Curr req: " + sendedRequest
@@ -232,7 +232,7 @@ Window {
                 if (cderr !== 3 && selectedOp != 9) {
                 calculator.pushRequest(resultText.text)
                 if (opClicked) calculator.pushOperation(selectedOp)
-                calculator.tryCalculate()
+                calculator.startCalculateChain()
                 opClicked = true
                 eqClicked = true
                 selectedOp = 9
