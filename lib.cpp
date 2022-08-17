@@ -16,11 +16,8 @@ void checkError(int* errorCode) {
 }
 
 bool isZero(const double pValue, int* errorCode) {
-    volatile double epsilon = std::numeric_limits<double>::epsilon();
-    volatile bool zero;
-    zero = pValue <= epsilon;
-    if (zero) { *errorCode = static_cast<int>(error::DIVBYZERO); }
-    return zero;
+    if (pValue <= std::numeric_limits<double>::epsilon()) { *errorCode = static_cast<int>(error::DIVBYZERO); return true; }
+    return false;
 }
 }
 
