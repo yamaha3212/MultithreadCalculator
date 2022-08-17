@@ -9,7 +9,6 @@ class threadSafeQueue
 
 public:
     threadSafeQueue();
-    ~threadSafeQueue();
     int size();
     bool empty();
     void clear();
@@ -19,7 +18,7 @@ public:
 
 private:
     QMutex mutex;
-    QQueue<T>* queue;
+    QQueue<T> queue;
 
 };
 
