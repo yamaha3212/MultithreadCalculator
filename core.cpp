@@ -1,10 +1,7 @@
 #include <threadsafequeue.cpp>
 #include "core.h"
-#include <iostream>
+#include "mlib.h"
 #include <thread>
-#include <lib.h>
-#include <mutex>
-#include <future>
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
 #include <string>
@@ -20,7 +17,7 @@ void calculator::pushRequest(double number) {
 }
 
 void calculator::pushOperation(int op) {
-    QueueCommands.push(op);
+    QueueCommands.push(static_cast<Operation::operation>(op));
 }
 
 void calculator::startCalculateChain() {
@@ -37,12 +34,12 @@ void calculator::terminate() {
     errCode = 0;
 }
 
-QString calculator::getGenuneOperation(int op) {
+QString calculator::getGenuineOperation(Operation::operation op) {
     switch (op) {
-        case 0: return "+";
-        case 1: return "-";
-        case 2: return "/";
-        case 3: return "*";
+        case Operation::operation::SUM: return "+";
+        case Operation::operation::SUB: return "-";
+        case Operation::operation::DIV: return "/";
+        case Operation::operation::MUL: return "*";
         default: return "err";
     }
 }
@@ -52,18 +49,21 @@ void calculator::getRes() {
     volatile double operandA;
     volatile double operandB;
 
+    MLib mathlib;
+
     while (!QueueRequests.empty()) {
 
         if ( QueueCommands.empty() ) { return; }
-        int op = QueueCommands.pop();
-        if ( op == 4 && !QueueResults.empty() ) {QueueResults.pop(); continue;}
-        else if ( op == 4 ) {continue;}
+        Operation::operation op = QueueCommands.pop();
+        if ( op == Operation::operation::RST && !QueueResults.empty() ) {QueueResults.pop(); continue;}
+        else if ( op == Operation::operation::RST ) {continue;}
         if(QueueRequests.size() == 1 && QueueResults.empty()) { return; }
         operandA = QueueResults.empty() ? QueueRequests.pop() : QueueResults.pop();
         operandB = QueueRequests.pop();
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-        double result = doIt(op, operandA, operandB, &errCode);
-        emit sendResponse(QString::number(operandA) + " " + getGenuneOperation(op) + " " + QString::number(operandB));
+        //double result = doIt(op, operandA, operandB, &errCode);
+        double result = mathlib.doIt(op, operandA, operandB, &errCode);
+        emit sendResponse(QString::number(operandA) + " " + getGenuineOperation(op) + " " + QString::number(operandB));
         if (!future.isCanceled()) {
             emit sendResult(result, errCode);
             if (errCode == 3) { terminate(); return; }

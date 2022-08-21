@@ -1,15 +1,8 @@
 #pragma once
 #include "threadsafequeue.h"
-#include <queue>
-#include <iostream>
+#include "operationsEnum.h"
 #include <QObject>
-#include <thread>
-#include <future>
-#include <mutex>
 #include <QFuture>
-#include <QtConcurrent/QtConcurrent>
-#include <QQueue>
-#include <QString>
 
 class calculator : public QObject
 {
@@ -33,15 +26,13 @@ public slots:
 private:
     QFuture<void> future;
     void getRes();
-    QString getGenuneOperation(int op);
+    QString getGenuineOperation(Operation::operation op);
 
-    enum class operation { SUM, SUB, DIV, MUL, RST };
-
-    threadSafeQueue<int> QueueCommands;
+    threadSafeQueue<Operation::operation> QueueCommands;
     threadSafeQueue<double> QueueRequests;
     threadSafeQueue<double> QueueResults;
 
     int errCode;
-    operation workType;
+    Operation::operation workType;
     int delay;
 };

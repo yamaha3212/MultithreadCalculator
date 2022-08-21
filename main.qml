@@ -1,6 +1,7 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.1
 import QtQuick.Window 2.1
+import opQMLEnum 1.0
 
 Window {
     visible: true
@@ -9,7 +10,7 @@ Window {
     minimumHeight: 355
 
     title: qsTr("Multithread Calculator")
-    property int selectedOp : 9
+    property int selectedOp : Operation.NOOP
     property bool opClicked: false
     property bool dotClicked: false
     property bool eqClicked: false
@@ -122,7 +123,7 @@ Window {
                     if (!opClicked) {calculator.pushRequest(resultText.text)}
                     opClicked = true
                     dotClicked = false
-                    if (selectedOp != 9) {
+                    if (selectedOp != Operation.NOOP) {
                         selectedOp = eventName
                         calculator.startCalculateChain()
                     } else { selectedOp = eventName }
@@ -130,10 +131,10 @@ Window {
                 }
                 property string eventName: {
                     switch (text) {
-                    case "+": return 0
-                    case "-": return 1
-                    case "÷": return 2
-                    case "×": return 3
+                    case "+": return Operation.SUM
+                    case "-": return Operation.SUB
+                    case "÷": return Operation.DIV
+                    case "×": return Operation.MUL
                     }
                 }
                 contentItem: Text {
@@ -174,7 +175,7 @@ Window {
                             error.text = "ErrCode: " + 0;
                             sendedRequest = ""
                             text: "Curr req: " + sendedRequest
-                            selectedOp = 9
+                            selectedOp = Operation.NOOP
                             opClicked = false
                             dotClicked = false
                             cderr = 0
@@ -190,7 +191,7 @@ Window {
                             resultText.text = dotClicked ? resultText.text : resultText.text.concat(eventName)
                             }
                         else {resultText.text = opClicked ? eventName : resultText.text == "0" ? eventName : resultText.text.length > 6 ? resultText.text : resultText.text.concat(eventName)}
-                        if (selectedOp != 9 && opClicked && !eqClicked) { calculator.pushOperation(selectedOp) }
+                        if (selectedOp != Operation.NOOP && opClicked && !eqClicked) { calculator.pushOperation(selectedOp) }
                         if (eqClicked) { calculator.pushOperation(4) }
                         opClicked = false
                         eqClicked = false
@@ -229,13 +230,13 @@ Window {
             height: y * 3
             text: "="
             onClicked: {
-                if (cderr !== 3 && selectedOp != 9) {
+                if (cderr !== 3 && selectedOp != Operation.NOOP) {
                 calculator.pushRequest(resultText.text)
                 if (opClicked) calculator.pushOperation(selectedOp)
                 calculator.startCalculateChain()
                 opClicked = true
                 eqClicked = true
-                selectedOp = 9
+                selectedOp = Operation.NOOP
                 }
             }
             contentItem: Text {

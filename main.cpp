@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "core.h"
+#include "operationsEnum.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,6 +11,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     calculator calculator;
+    qmlRegisterType<Operation>("opQMLEnum", 1, 0, "Operation");
 
     QQmlApplicationEngine engine;
     QQmlContext *context = engine.rootContext();
