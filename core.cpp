@@ -1,12 +1,11 @@
 #include <threadsafequeue.cpp>
 #include "core.h"
-#include "mlib.h"
 #include <thread>
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
 #include <string>
 
-calculator::calculator(QObject* parent) : QObject(parent) {}
+calculator::calculator(QObject* parent) : QObject(parent), mathlib(MLib()) {}
 
 void calculator::setDelay(int delay) {
     calculator::delay = delay;
@@ -49,8 +48,6 @@ void calculator::getRes() {
     volatile double operandA;
     volatile double operandB;
 
-    MLib mathlib;
-
     while (!QueueRequests.empty()) {
 
         if ( QueueCommands.empty() ) { return; }
@@ -61,7 +58,6 @@ void calculator::getRes() {
         operandA = QueueResults.empty() ? QueueRequests.pop() : QueueResults.pop();
         operandB = QueueRequests.pop();
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-        //double result = doIt(op, operandA, operandB, &errCode);
         double result = mathlib.doIt(op, operandA, operandB, &errCode);
         emit sendResponse(QString::number(operandA) + " " + getGenuineOperation(op) + " " + QString::number(operandB));
         if (!future.isCanceled()) {

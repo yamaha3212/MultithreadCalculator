@@ -1,6 +1,7 @@
 #pragma once
 #include "threadsafequeue.h"
 #include "operationsEnum.h"
+#include "mlib.h"
 #include <QObject>
 #include <QFuture>
 
@@ -35,4 +36,5 @@ private:
     int errCode;
     Operation::operation workType;
     int delay;
+    MLib mathlib;
 };
