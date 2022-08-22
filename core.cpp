@@ -5,7 +5,7 @@
 #include <QtConcurrent/QtConcurrent>
 #include <string>
 
-calculator::calculator(QObject* parent) : QObject(parent), mathlib(MLib()) {}
+calculator::calculator(QObject* parent) : QObject(parent), errCode(0), delay(0) {}
 
 void calculator::setDelay(int delay) {
     calculator::delay = delay;
@@ -58,7 +58,7 @@ void calculator::getRes() {
         operandA = QueueResults.empty() ? QueueRequests.pop() : QueueResults.pop();
         operandB = QueueRequests.pop();
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-        double result = mathlib.doIt(op, operandA, operandB, &errCode);
+        double result = doIt(op, operandA, operandB, &errCode);
         emit sendResponse(QString::number(operandA) + " " + getGenuineOperation(op) + " " + QString::number(operandB));
         if (!future.isCanceled()) {
             emit sendResult(result, errCode);
